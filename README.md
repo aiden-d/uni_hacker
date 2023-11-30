@@ -1,5 +1,9 @@
 # Uni Hacker
 
+## Description
+
+A simple script to extract questions and solutions from uni problem sheets and generate an Anki (flashcard) file containing the question image on the front and answer image on the back.
+
 ## Installation and Setup
 
 ### Cloning the repo
