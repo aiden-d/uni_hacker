@@ -3,8 +3,10 @@ import re
 import genanki
 import os
 import random
+import dotenv
 
 # Read and validate inputs
+dotenv.load_dotenv()
 
 fexpr= "^[^+]+\.pdf$"
 
@@ -21,7 +23,8 @@ if (not os.path.exists(sname) or re.match(fexpr, sname) == None):
 out = input("Enter anki filename prefix: ")
 
 # Expressions for matching questions / solution
-exprs = ["^[ ]*[*]+[ ]*[0-9]+[.][ ]*([\\][n]|[\n])", "^[ ]*([Q]|[S])+[ ]*[0-9]+[.][ ]*([\\][n]|[\n])"]
+
+exprs = os.environ.get("EXPRS").split(';')
 
 # The last question number on the sheet
 max_question_num = 0
