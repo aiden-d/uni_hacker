@@ -26,7 +26,8 @@ class QuestionExtractor:
     def extract(self, prefix, doc, exprs):
         question_md = {} # number : (page , (x0, y0, x1, y1))
 
-        max_question_num = 0
+        max_question_num = None
+        min_question_num = None
 
         print(f"Generating {prefix} metadata...")
 
@@ -48,11 +49,15 @@ class QuestionExtractor:
                             n.append(c)
                     if (n):
                         num = int(''.join(n))
+                        if (min_question_num == None or num < min_question_num):
+                            min_question_num = num
+                        if (max_question_num == None or num > max_question_num):
+                            max_question_num = num
                         question_md[num] = (page_no, (x0, y0, x1, y1))
                         max_question_num = num
         
         print(f"Generating {prefix} images...")
-        for i in range(max_question_num + 1):
+        for i in range(min_question_num, max_question_num + 1):
             if i in question_md:
                 (page_no, (x0, y0, x1, y1)) = question_md[i]
                 page = doc.load_page(page_no)
