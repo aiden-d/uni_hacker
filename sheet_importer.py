@@ -11,48 +11,43 @@ dotenv.load_dotenv()
 
 exprs = os.environ.get("EXPRS").split(';')
 
-
-# Get inputs and files
-
-fexpr= "^[^+]+\.pdf$"
-
-qname = input("Enter question sheet filepath: ")
-
-if (not os.path.exists(qname) or re.match(fexpr, qname) == None):
-    raise Exception("Invalid file path")
-
-sname = input("Enter solution sheet filepath: ")
-
-if (not os.path.exists(sname) or re.match(fexpr, sname) == None):
-    raise Exception("Invalid file path")
-
-qs = fitz.open(qname)
-sol = fitz.open(sname)
-
-course = input("Which course is this for: ")
-
-week_no = input("Enter the week number: ")
-
-if (not week_no.isnumeric()):
-    raise Exception("Invalid week number")
-
-week_no = int(week_no)
-
-# Create directory
-
+# Init folder
 root_dir = "data"
-course_dir = f"{root_dir}/{course}"
-week_dir = f"{course_dir}/week{week_no}"
-
 if (not os.path.isdir(root_dir)):
     os.mkdir(root_dir)
-if (not os.path.isdir(course_dir)):
-    os.mkdir(course_dir)
-if (not os.path.isdir(week_dir)):
-    os.mkdir(week_dir)
 
-# Extract images
+# Get inputs files
 
+if (not os.path.exists("input")):
+    raise Exception("Input folder non-existent")
+
+inputs = os.listdir("input")
+expr = "^[A-Za-z]+_[0-9]+_(q|s).pdf"
+inputs = list(filter(lambda f: re.match(expr, f), inputs))
+
+q_inputs = list(filter(lambda f: f.endswith("q.pdf"), inputs))
+s_inputs = list(filter(lambda f: f.endswith("s.pdf"), inputs))
+print(inputs)
 qe = QuestionExtractor()
-qe.extract(f"{week_dir}/q", qs, exprs)
-qe.extract(f"{week_dir}/s", sol, exprs)
+
+def process_input(fi, prefix):
+    md = fi.split("_")
+    course = md[0]
+    week_no = int(md[1])
+    course_dir = f"{root_dir}/{course}"
+    week_dir = f"{course_dir}/week{week_no}"
+    if (not os.path.isdir(course_dir)):
+        os.mkdir(course_dir)
+    if (not os.path.isdir(week_dir)):
+        os.mkdir(week_dir)
+
+    input_dir = f"input/{fi}"
+    f = fitz.open(input_dir)
+    qe.extract(f"{week_dir}/{prefix}", f, exprs)
+
+
+for q in q_inputs:
+    process_input(q, "q")
+
+for s in s_inputs:
+    process_input(s, "s")
