@@ -13,28 +13,38 @@ solution_images = []
 def get_number(s):
     num = ""
     flag = False
+    count = 0
     for c in s:
-        if (c == "_"):
+        if (c == "_" or c == "."):
             flag = not flag
+            count += 1
+            if (count == 2):
+                break
         elif (flag):
             num += c
     return int(num)
 
 for course in courses:
+    if (course == ".DS_Store"):
+        continue
     weeks = os.listdir(f"data/{course}")
     for week in weeks:
+        if (week == ".DS_Store"):
+            continue
         path = f"data/{course}/{week}"
         files = os.listdir(path)
         # Get a valid question
         qs = []
         ss = []
         #print(files)
-        while (len(qs) == 0 or len(ss) == 0):
-            num = random.randint(1, (len(files) // 2) + 1)
-            qe = f"q_{num}(_|.)"
-            se = f"s_{num}(_|.)"
-            qs = list(filter(lambda f: re.match(qe, f), files))
-            ss = list(filter(lambda f: re.match(se, f), files))
+        
+        max_num = max(map(get_number, files))
+        min_num = min(map(get_number, files))
+        num = random.randint(min_num, max_num)
+        qe = f"q_{num}(_|.)"
+        se = f"s_{num}(_|.)"
+        qs = list(filter(lambda f: re.match(qe, f), files))
+        ss = list(filter(lambda f: re.match(se, f), files))
         question_images += [f"{path}/{q}" for q in qs]
         solution_images += [f"{path}/{s}" for s in ss]
 
@@ -84,8 +94,8 @@ def create_pdf(images, output_pdf):
 
             # Reset the y-coordinate below the title for subsequent pages
             # Remove this block if you want the title on every page
-            if c.getPageNumber() > 1:
-                y += title_size + margin
+            # if c.getPageNumber() > 1:
+            #     y += title_size + margin
 
         # Draw the image on the canvas
         c.drawImage(image_file, margin, y, width=new_width, height=new_height, preserveAspectRatio=True)
