@@ -1,6 +1,6 @@
-.png
+*.png
 .env
-.apkg
-.pdf
-.pyc
+*.apkg
+*.pdf
+*.pyc
 
