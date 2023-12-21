@@ -9,7 +9,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-exprs = os.environ.get("EXPRS").split(';')
+
 
 # Init folder
 root_dir = "data"
@@ -33,6 +33,7 @@ qe = QuestionExtractor()
 def process_input(fi, prefix):
     md = fi.split("_")
     course = md[0]
+    exprs = os.environ.get(course.upper()).split(';')
     week_no = int(md[1])
     course_dir = f"{root_dir}/{course}"
     week_dir = f"{course_dir}/week{week_no}"

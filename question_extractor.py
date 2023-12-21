@@ -49,6 +49,8 @@ class QuestionExtractor:
                             n.append(c)
                     if (n):
                         num = int(''.join(n))
+                        if (num in question_md):
+                            continue
                         if (min_question_num == None or num < min_question_num):
                             min_question_num = num
                         if (max_question_num == None or num > max_question_num):
@@ -66,6 +68,9 @@ class QuestionExtractor:
                 # Case 1: Last question
                 if (i == max_question_num):
                     clip = self.get_clip(bound, (x0, y0, x1, y1), (bound.x0, bound.y1, bound.x1, bound.y1))
+                elif (i+1 not in question_md):
+                    print(f"Error: Question {i+1} not found for question {i}")
+                    break
                 # Case 2: Bth on same page
                 elif (page_no == question_md[i+1][0]):
                     clip = self.get_clip(bound, (x0, y0, x1, y1), question_md[i+1][1])
